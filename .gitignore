@@ -1,33 +1,45 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# --- OS junk ---
+.DS_Store
+Thumbs.db
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
+# --- IDEs ---
+.idea/
 *.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
+out/
 .vscode/
+
+# --- Maven/Gradle ---
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+.build/
+.gradle/
+
+# --- Logs & temp ---
+*.log
+logs/
+hs_err_pid*
+*.tmp
+tmp/
+*.swp
+
+# --- Spring Boot & config caches ---
+.springBeans/
+.spring/
+*.pid
+
+# --- Secrets / local env (DO NOT COMMIT) ---
+.env
+.env.*
+*.local.properties
+application-local.properties
+application-secret.properties
+
+# --- Keys / certs (if any) ---
+*.keystore
+*.jks
+*.p12
+
+# --- Node stuff (only if you add web assets later) ---
+node_modules/
+dist/
