@@ -20,10 +20,4 @@ Extras: Configuration Processor, Validation, Spring Mail, PDFBox (later)
 - MySQL 8 (DB: `medvault`)
 - Git
 
-## Quick Start (Dev)
-1. Create DB & user:
-   ```sql
-   CREATE DATABASE medvault CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-   CREATE USER 'medvault_user'@'%' IDENTIFIED BY 'StrongPwd123!';
-   GRANT ALL PRIVILEGES ON medvault.* TO 'medvault_user'@'%';
-   FLUSH PRIVILEGES;
+
