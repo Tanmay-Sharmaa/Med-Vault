@@ -1,0 +1,49 @@
+  <!DOCTYPE html>
+  <html xmlns:th="http://www.thymeleaf.org">
+  <body>
+  <h2>Upload Encrypted Record (Doctor)</h2>
+
+  <p th:if="${msg}" th:text="${msg}" style="color:green;"></p>
+  <p th:if="${err}" th:text="${err}" style="color:red;"></p>
+
+  <form th:action="@{/doctor/upload}" method="post" enctype="multipart/form-data">
+    <label>Patient Email:
+      <input type="email" name="patientEmail" required />
+    </label><br/><br/>
+    <label>Type:
+      <select name="type">
+        <option value="PRESCRIPTION">Prescription</option>
+        <option value="LAB_REPORT">Lab Report</option>
+        <option value="HISTORY">History</option>
+        <option value="OTHER">Other</option>
+      </select>
+    </label><br/><br/>
+    <input type="file" name="file" required />
+    <button type="submit">Upload</button>
+  </form>
+
+  <hr/>
+
+
+  <!-- general upload form (posts to /records/upload) -->
+  <h2>Upload Encrypted Record (General)</h2>
+  <form th:action="@{/records/upload}" method="post" enctype="multipart/form-data">
+    <!-- CSRF token -->
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+    <label>Patient Email:
+      <input type="email" name="patientEmail" required />
+    </label><br/><br/>
+    <label>Type:
+      <select name="type">
+        <option value="GENERAL">General</option>
+        <option value="PRESCRIPTION">Prescription</option>
+        <option value="REPORT">Report</option>
+      </select>
+    </label><br/><br/>
+    <input type="file" name="file" required />
+    <button type="submit">Upload</button>
+  </form>
+  <a th:href="@{/doctor/dashboard}">Back</a>
+  </body>
+  </html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<h2>My Records</h2>
+<table border="1" cellpadding="6">
+    <tr><th>When</th><th>Type</th><th>Name</th><th>Size</th><th>Action</th></tr>
+    <tr th:each="r : ${records}">
+        <td th:text="${#temporals.format(r.uploadedAt, 'yyyy-MM-dd HH:mm')}">date</td>
+        <td th:text="${r.type}">type</td>
+        <td th:text="${r.originalFilename}">name</td>
+        <!-- file size in KB  -->
+        <td th:text="${#numbers.formatDecimal(r.sizeByte/1024.0, 1, 1)} + ' KB'">0 KB</td>
+        <td><a th:href="@{'/record/' + ${r.id} + '/download'}">Download</a></td>
+    </tr>
+</table>
+<a th:href="@{/logout}">Logout</a>  
+</body>
+</html>
