@@ -27,6 +27,7 @@ public class DoctorPatient {
     private User patient;
 
     @Column(nullable = false)
+    @Builder.Default
     private Instant assignedAt = Instant.now();
 
 

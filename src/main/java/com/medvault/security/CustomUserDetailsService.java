@@ -18,6 +18,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         var authorities = u.getRoles().stream()
                 .map(r -> new SimpleGrantedAuthority(r.getName()))
                 .toList();
+        System.out.println("Loaded user: " + u.getEmail() + " / " + u.getPasswordHash());
+
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(u.getEmail())
@@ -26,4 +28,5 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .disabled(!u.isEnabled())
                 .build();
     }
+
 }

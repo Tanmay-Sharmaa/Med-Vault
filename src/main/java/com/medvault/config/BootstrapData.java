@@ -36,6 +36,7 @@ public class BootstrapData implements CommandLineRunner {
                     .email("admin@medvault.com")
                     .name("admin")
                     .passwordHash(passwordEncoder.encode("admin123"))
+                    .enabled(true)
                     .build();
             u.getRoles().add(adminRole);
             return userRepository.save(u);
@@ -46,6 +47,7 @@ public class BootstrapData implements CommandLineRunner {
                     .email("doctor1@medvault.com")
                     .name("doctor1")
                     .passwordHash(passwordEncoder.encode("doctor123"))
+                    .enabled(true)
                     .build();
             u.getRoles().add(doctorRole);
             return userRepository.save(u);
@@ -56,6 +58,7 @@ public class BootstrapData implements CommandLineRunner {
                     .email("patient1@medvault.com")
                     .name("patient1")
                     .passwordHash(passwordEncoder.encode("patient123"))
+                    .enabled(true)
                     .build();
             u.getRoles().add(patientRole);
             return userRepository.save(u);

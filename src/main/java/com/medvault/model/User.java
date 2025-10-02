@@ -3,6 +3,7 @@ package com.medvault.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity @Table(name="users")
@@ -21,11 +22,12 @@ public class User {
     @Column(nullable=false, unique=true)
     private String email;
 
-    @Column(nullable=false)
+    @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
     private String phone;
 
+    @Builder.Default
     private boolean enabled = true;
 
     private Instant createdAt = Instant.now();
@@ -36,5 +38,6 @@ public class User {
             joinColumns=@JoinColumn(name="user_id"),
             inverseJoinColumns=@JoinColumn(name="role_id")
     )
-    private Set<Role> roles;
+    @Builder.Default
+    private Set<Role> roles = new HashSet<>();
 }
