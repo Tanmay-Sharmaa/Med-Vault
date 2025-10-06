@@ -52,7 +52,8 @@ public class SecurityConfig {
                         .usernameParameter("email")   // or "email" if your input name is email
                         .passwordParameter("password")
                         .failureUrl("/login?error")
-                        .successHandler(successHandler())
+                        .defaultSuccessUrl("/post-login", true)
+
                 )
                 .logout(l -> l.logoutUrl("/logout").logoutSuccessUrl("/login?logout").permitAll());
 

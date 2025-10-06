@@ -29,7 +29,12 @@ public class AuditLog {
     private Action action;
 
     @Column(nullable = false)
-    public Instant at = Instant.now();
+    public Instant at ;
+
+        @PrePersist
+        public void prePersist(){
+            if(at == null) at = Instant.now();
+        }
 
     public enum Action{ UPLOAD, DOWNLOAD}
 

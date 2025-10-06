@@ -135,6 +135,20 @@ public class RecordController {
         return "records/upload";
     }
 
+    // ---- DOCTOR: Upload form for specific patient ----
+    @GetMapping("/records/upload/{patientId}")
+    public String uploadFormForPatient(@PathVariable Long patientId, Model model) {
+        // find patient by ID
+        User patient = userRepo.findById(patientId)
+                .orElseThrow(() -> new IllegalArgumentException("Patient not found"));
+
+        // send patient data to the upload page
+        model.addAttribute("patientEmail", patient.getEmail());
+        model.addAttribute("patientName", patient.getName());
+        return "records/upload";  // reuse the same upload.html form
+    }
+
+
     @PostMapping("/doctor/upload")
     public String doctorUpload(@RequestParam("patientEmail") String patientEmail,
                                @RequestParam("type") MedicalRecord.RecordType type,

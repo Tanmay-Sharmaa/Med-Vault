@@ -1,10 +1,66 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<body>
+<head>
+    <meta charset="UTF-8">
+    <title>Patient Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body class="p-4">
+
 <h2>Patient Dashboard</h2>
+<p>Welcome! Below are your uploaded medical records.</p>
 
-<p><a th:href="@{/patient/records}">My Medical Records</a></p>
+<!-- ================= MEDICAL RECORDS TABLE ================= -->
+<h4>Your Records</h4>
+<table class="table table-striped table-bordered mt-3">
+    <thead>
+    <tr>
+        <th>File Name</th>
+        <th>Type</th>
+        <th>Uploaded At</th>
+        <th>Uploaded By</th>
+        <th>Download</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="rec : ${records}">
+        <td th:text="${rec.originalFilename} ?: 'N/A'">File Name</td>
+        <td th:text="${rec.type} ?: 'N/A'">Type</td>
+        <td th:text="${#temporals.format(rec.uploadedAt, 'yyyy-MM-dd HH:mm:ss')} ?: 'N/A'">Uploaded At</td>
+        <td th:text="${rec.uploadedBy != null ? rec.uploadedBy.name : 'N/A'}">Uploaded By</td>
+        <td>
+            <a th:href="@{/records/{id}/download(id=${rec.id})}" class="btn btn-success btn-sm">
+                Download
+            </a>
+        </td>
+    </tr>
+    </tbody>
 
-<a th:href="@{/logout}">Logout</a>
+
+</table>
+
+<!-- ================= AUDIT HISTORY TABLE ================= -->
+<h4 class="mt-5">Audit History</h4>
+<table class="table table-bordered mt-2">
+    <thead>
+    <tr>
+        <th>Record Name</th>
+        <th>Action</th>
+        <th>Actor</th>
+        <th>Timestamp</th>
+    </tr>
+    </thead>
+    <tr th:each="log : ${logs}">
+        <td th:text="${log.record != null ? log.record.originalFilename : 'N/A'}">record.pdf</td>
+        <td th:text="${log.action != null ? log.action : 'N/A'}">UPLOAD</td>
+        <td th:text="${log.actor != null ? log.actor.name : 'N/A'}">Doctor</td>
+        <td th:text="${#temporals.format(log.at, 'yyyy-MM-dd HH:mm:ss')} ?: 'N/A'">2025-10-06</td>
+    </tr>
+
+
+</table>
+
+<a th:href="@{/logout}" class="btn btn-danger mt-4">Logout</a>
+
 </body>
 </html>

@@ -10,6 +10,7 @@ public interface DoctorPatientRepository extends JpaRepository<DoctorPatient,Lon
     boolean existsByDoctorAndPatient(User doctor,User patient );
     List<DoctorPatient>findByDoctor(User doctor);
     Optional<DoctorPatient>findByDoctorAndPatient(User doctor, User patient);
+    List<DoctorPatient> findByDoctorEmail(String email);
 
 
 }
