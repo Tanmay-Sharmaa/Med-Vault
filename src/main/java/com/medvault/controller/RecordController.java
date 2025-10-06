@@ -17,10 +17,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Controller
 @RequiredArgsConstructor
@@ -165,4 +170,25 @@ public class RecordController {
         }
         return "records/upload";
     }
+    @GetMapping("/records/{email}/bundle")
+    public void downloadBundle(@PathVariable String email, HttpServletResponse response) throws Exception {
+        List<MedicalRecord> files = recordRepo.findByPatientEmail(email);
+
+        if (files.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "No records found for this patient");
+            return;
+        }
+        response.setContentType("application/zip");
+        response.setHeader("Content-Disposition", "attachment; filename=records_bundle.zip");
+
+        try (ZipOutputStream zos = new ZipOutputStream(response.getOutputStream())) {
+            for (MedicalRecord rec : files) {
+                zos.putNextEntry(new ZipEntry(rec.getOriginalFilename()));
+                storage.streamDecrypted(rec, zos);
+                zos.closeEntry();
+            }
+        }
+    }
+
+
 }

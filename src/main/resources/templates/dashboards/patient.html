@@ -7,60 +7,85 @@
 </head>
 <body class="p-4">
 
-<h2>Patient Dashboard</h2>
-<p>Welcome! Below are your uploaded medical records.</p>
+<!-- 🔹 Navbar -->
+<nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+        <span class="navbar-brand">MedVault</span>
+        <div>
+            <a th:href="@{/logout}" class="btn btn-outline-light btn-sm">Logout</a>
+        </div>
+    </div>
+</nav>
 
-<!-- ================= MEDICAL RECORDS TABLE ================= -->
-<h4>Your Records</h4>
-<table class="table table-striped table-bordered mt-3">
-    <thead>
-    <tr>
-        <th>File Name</th>
-        <th>Type</th>
-        <th>Uploaded At</th>
-        <th>Uploaded By</th>
-        <th>Download</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="rec : ${records}">
-        <td th:text="${rec.originalFilename} ?: 'N/A'">File Name</td>
-        <td th:text="${rec.type} ?: 'N/A'">Type</td>
-        <td th:text="${#temporals.format(rec.uploadedAt, 'yyyy-MM-dd HH:mm:ss')} ?: 'N/A'">Uploaded At</td>
-        <td th:text="${rec.uploadedBy != null ? rec.uploadedBy.name : 'N/A'}">Uploaded By</td>
-        <td>
-            <a th:href="@{/records/{id}/download(id=${rec.id})}" class="btn btn-success btn-sm">
-                Download
-            </a>
-        </td>
-    </tr>
-    </tbody>
+<div class="container">
+
+    <h2 class="mb-3">Patient Dashboard</h2>
+    <p>Welcome! Below are your uploaded medical records.</p>
+
+    <!-- ✅ Optional Success/Error Alerts -->
+    <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
+    <div th:if="${err}" class="alert alert-danger" th:text="${err}"></div>
+
+    <!-- ================= DOWNLOAD ALL BUTTON ================= -->
+    <a th:href="@{/records/{email}/bundle(email=${#authentication.name})}"
+       class="btn btn-secondary btn-sm mb-3">Download All Records</a>
 
 
-</table>
+    <!-- ================= MEDICAL RECORDS TABLE ================= -->
+    <h4>Your Records</h4>
+    <table class="table table-striped table-bordered mt-3">
+        <thead class="table-dark">
+        <tr>
+            <th>File Name</th>
+            <th>Type</th>
+            <th>Content Type</th>
+            <th>Size</th>
+            <th>Uploaded At</th>
+            <th>Uploaded By</th>
+            <th>Download</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="rec : ${records}">
+            <td th:text="${rec.originalFilename} ?: 'N/A'">File Name</td>
+            <td th:text="${rec.type} ?: 'N/A'">Type</td>
+            <td th:text="${rec.contentType} ?: 'N/A'">Content Type</td>
+            <td th:text="${rec.readableSize} ?: 'N/A'">Size</td>
+            <td th:text="${#temporals.format(rec.uploadedAt, 'yyyy-MM-dd HH:mm:ss')} ?: 'N/A'">Uploaded At</td>
+            <td th:text="${rec.uploadedBy != null ? rec.uploadedBy.name : 'N/A'}">Uploaded By</td>
+            <td>
+                <a th:href="@{/records/{id}/download(id=${rec.id})}" class="btn btn-success btn-sm">
+                    Download
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
-<!-- ================= AUDIT HISTORY TABLE ================= -->
-<h4 class="mt-5">Audit History</h4>
-<table class="table table-bordered mt-2">
-    <thead>
-    <tr>
-        <th>Record Name</th>
-        <th>Action</th>
-        <th>Actor</th>
-        <th>Timestamp</th>
-    </tr>
-    </thead>
-    <tr th:each="log : ${logs}">
-        <td th:text="${log.record != null ? log.record.originalFilename : 'N/A'}">record.pdf</td>
-        <td th:text="${log.action != null ? log.action : 'N/A'}">UPLOAD</td>
-        <td th:text="${log.actor != null ? log.actor.name : 'N/A'}">Doctor</td>
-        <td th:text="${#temporals.format(log.at, 'yyyy-MM-dd HH:mm:ss')} ?: 'N/A'">2025-10-06</td>
-    </tr>
+    <!-- ================= AUDIT HISTORY TABLE ================= -->
+    <h4 class="mt-5">Audit History</h4>
+    <table class="table table-bordered mt-2">
+        <thead class="table-dark">
+        <tr>
+            <th>Record Name</th>
+            <th>Action</th>
+            <th>Actor</th>
+            <th>Timestamp</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="log : ${logs}">
+            <td th:text="${log.record != null ? log.record.originalFilename : 'N/A'}">record.pdf</td>
+            <td th:text="${log.action != null ? log.action : 'N/A'}">UPLOAD</td>
+            <td th:text="${log.actor != null ? log.actor.name : 'N/A'}">Doctor</td>
+            <td th:text="${#temporals.format(log.at, 'yyyy-MM-dd HH:mm:ss')} ?: 'N/A'">2025-10-06</td>
+        </tr>
+        </tbody>
+    </table>
 
+    <a th:href="@{/logout}" class="btn btn-danger mt-4">Logout</a>
 
-</table>
-
-<a th:href="@{/logout}" class="btn btn-danger mt-4">Logout</a>
+</div>
 
 </body>
 </html>

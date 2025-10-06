@@ -40,13 +40,14 @@ public class SecurityConfig {
         http
                 .authenticationProvider(authProvider)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login","/register","/css/**","/js/**").permitAll()
-                        .requestMatchers("/record/*/download").hasAnyRole("DOCTOR","PATIENT","ADMIN")
+                        .requestMatchers("/login", "/register", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/records/**").hasAnyRole("DOCTOR", "PATIENT", "ADMIN") // ✅ secure all record endpoints
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/doctor/**").hasRole("DOCTOR")
                         .requestMatchers("/patient/**").hasRole("PATIENT")
                         .anyRequest().authenticated()
                 )
+
                 .formLogin(f -> f
                         .loginPage("/login").permitAll()
                         .usernameParameter("email")   // or "email" if your input name is email

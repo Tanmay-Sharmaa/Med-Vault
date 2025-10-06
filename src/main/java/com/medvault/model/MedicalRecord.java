@@ -46,4 +46,15 @@ public class MedicalRecord {
 
     public enum RecordType { PRESCRIPTION, LAB_REPORT, HISTORY, OTHER }
 
+    public String getReadableSize(){
+        double kb = sizeByte / 1024.0;
+        if (kb<1024){
+            return String.format("%.2f KB", kb);
+        }
+        else {
+            double mb = kb / 1024.0;
+            return String.format("%.2f MB", mb);
+        }
+    }
+
 }
