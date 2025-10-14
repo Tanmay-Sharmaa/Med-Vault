@@ -1,4 +1,273 @@
-<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><body>
-<h2>Admin Dashboard</h2>
-<a th:href="@{/logout}">Logout</a>
-</body></html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>MedVault | Admin Dashboard</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(180deg, #f3f9ff 0%, #e6f2ff 100%);
+            color: #333;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(90deg, #0077b6, #00b4d8);
+            border-radius: 10px;
+            padding: 1rem 2rem;
+        }
+
+        .navbar h3 {
+            color: white;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .logout-btn {
+            background-color: #fff;
+            color: #0077b6;
+            font-weight: 600;
+            border: 2px solid #0077b6;
+            border-radius: 25px;
+            padding: 6px 20px;
+            transition: 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #0077b6;
+            color: #fff;
+            border-color: #fff;
+        }
+
+        /* Section Headings */
+        h4 {
+            color: #003366;
+            font-weight: 600;
+        }
+
+        /* Card Styles */
+        .card {
+            border-radius: 14px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border: none;
+            background-color: #fff;
+        }
+
+        /* Table Styles */
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table thead {
+            background-color: #0077b6;
+            color: white;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .table td, .table th {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #f4f9ff;
+        }
+
+        .badge {
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Buttons */
+        .btn-warning {
+            background-color: #ffcc00;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0b700;
+        }
+
+        .btn-danger {
+            background-color: #ff4b5c;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .btn-danger:hover {
+            background-color: #e63946;
+        }
+
+        .btn-success {
+            background: linear-gradient(90deg, #00b894, #00cec9);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(90deg, #00a182, #00b4a0);
+        }
+
+        /* Download Logs Button */
+        .download-btn {
+            background: linear-gradient(90deg, #00b4d8, #0077b6);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 8px 22px;
+            font-weight: 600;
+            transition: 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: linear-gradient(90deg, #0077b6, #0096c7);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 119, 182, 0.3);
+        }
+
+        .section-divider {
+            border: none;
+            height: 2px;
+            background-color: #dee2e6;
+            margin: 3rem 0;
+        }
+
+        footer {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body class="container mt-4">
+
+<!-- 🔹 NAVBAR -->
+<nav class="navbar d-flex justify-content-between align-items-center shadow-sm mb-4">
+    <h3>⚙️ MedVault Admin Panel</h3>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="logout-btn">Logout</button>
+    </form>
+</nav>
+
+<!-- ✅ Welcome Message -->
+<div th:if="${param.welcome}" class="alert alert-success text-center" id="welcomeAlert">
+    👋 Welcome back, <span th:text="${#authentication.name}">User</span>!
+</div>
+
+<!-- 👥 USER MANAGEMENT -->
+<div class="card p-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>👥 User Management</h4>
+        <span class="badge bg-primary" th:text="'Total Users: ' + ${users.size()}"></span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.name}"></td>
+                <td th:text="${user.email}"></td>
+                <td>
+                    <span class="badge bg-info text-dark" th:text="${user.roles[0].name}"></span>
+                </td>
+                <td>
+                    <span th:if="${user.enabled}" class="badge bg-success">Active</span>
+                    <span th:if="${!user.enabled}" class="badge bg-secondary">Deactivated</span>
+                </td>
+                <td>
+                    <a th:if="${user.enabled}"
+                       th:href="@{'/admin/user/' + ${user.id} + '/deactivate'}"
+                       class="btn btn-warning btn-sm">Deactivate</a>
+
+                    <a th:if="${!user.enabled}"
+                       th:href="@{'/admin/user/' + ${user.id} + '/reactivate'}"
+                       class="btn btn-success btn-sm">Reactivate</a>
+
+                    <a th:href="@{'/admin/user/' + ${user.id} + '/delete'}"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- 🧾 AUDIT LOGS -->
+<div class="card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>🧾 Activity Logs</h4>
+        <a th:href="@{/admin/logs/export}" class="download-btn">⬇️ Download Logs (CSV)</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+            <tr>
+                <th>User (Actor)</th>
+                <th>Record Name</th>
+                <th>Action</th>
+                <th>Timestamp</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="log : ${logs}">
+                <td th:text="${log.actor.email}"></td>
+                <td th:text="${log.record.originalFilename}"></td>
+                <td th:text="${log.action}"></td>
+                <td th:text="${#temporals.format(log.at, 'yyyy-MM-dd HH:mm')}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<footer>© 2025 MedVault | Secure Health Record System</footer>
+
+<script>
+    // Welcome message fade out
+    document.addEventListener("DOMContentLoaded", function () {
+        const alertBox = document.getElementById("welcomeAlert");
+        if (alertBox) {
+            setTimeout(() => {
+                alertBox.style.transition = "opacity 0.8s ease";
+                alertBox.style.opacity = "0";
+                setTimeout(() => { alertBox.style.display = "none"; }, 800);
+            }, 3000);
+        }
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,15 +1,154 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><title>Login</title></head>
-<body>
-<h2>MedVault Login</h2>
-<form th:action="@{/login}" method="post">
-    <label>Email: <input type="email" name="email"/></label><br/>
-    <label>Password: <input type="password" name="password"/></label><br/>
-    <button type="submit">Login</button>
-</form>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MedVault | Login</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-<p th:if="${param.error}">Invalid credentials</p>
-<p th:if="${param.logout}">Logged out</p>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            position: relative;
+        }
+
+        .login-card h2 {
+            color: #0d47a1;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+
+        .form-control {
+            border-radius: 30px;
+            padding: 12px 18px;
+            font-size: 1rem;
+            border: 1.5px solid #bcdffb;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #0077b6;
+            box-shadow: 0 0 8px rgba(0, 119, 182, 0.3);
+        }
+
+        .login-btn {
+            background: linear-gradient(90deg, #0077b6, #00b4d8);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 0;
+            width: 100%;
+            margin-top: 15px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(90deg, #005f8f, #0096c7);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 119, 182, 0.3);
+        }
+
+        footer {
+            position: fixed;
+            bottom: 15px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #444;
+        }
+
+        /* 🔹 Animated alert styling */
+        .alert {
+            font-weight: 600;
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-30px);
+            opacity: 0;
+            transition: all 0.6s ease;
+            border-radius: 25px;
+            width: 90%;
+            max-width: 300px;
+            font-size: 0.95rem;
+            z-index: 100;
+        }
+
+        .alert.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <h2>🩺 MedVault Login</h2>
+
+    <!-- Alerts -->
+    <div th:if="${param.error}" class="alert alert-danger text-center" id="errorAlert">
+        Invalid credentials
+    </div>
+
+    <div th:if="${param.logout}" class="alert alert-success text-center" id="logoutAlert">
+        Logged out successfully
+    </div>
+
+    <!-- Login Form -->
+    <form th:action="@{/login}" method="post">
+        <div class="mb-3">
+            <input type="email" name="email" placeholder="Enter your email" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <input type="password" name="password" placeholder="Enter your password" class="form-control" required>
+        </div>
+        <button type="submit" class="login-btn">Login</button>
+    </form>
+</div>
+
+<footer>© 2025 MedVault | Secure Health Record System</footer>
+
+<!-- Script for animation + fadeout -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const errorAlert = document.getElementById("errorAlert");
+        const logoutAlert = document.getElementById("logoutAlert");
+
+        [errorAlert, logoutAlert].forEach(alert => {
+            if (alert) {
+                // Slide down
+                setTimeout(() => alert.classList.add("show"), 200);
+
+                // Fade out after 6 seconds
+                setTimeout(() => {
+                    alert.style.transition = "opacity 1s ease, transform 0.6s ease";
+                    alert.style.opacity = "0";
+                    alert.style.transform = "translateX(-50%) translateY(-20px)";
+                }, 6000);
+
+                // Remove after fade-out
+                setTimeout(() => alert.remove(), 7000);
+            }
+        });
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

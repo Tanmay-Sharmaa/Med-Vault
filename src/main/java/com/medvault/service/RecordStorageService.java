@@ -71,4 +71,21 @@ public class RecordStorageService {
             crypto.decrypt(in, out);
         }
     }
+    //  Helper: decrypts the encrypted .bin file to a temporary readable file
+    public File decryptToTempFile(MedicalRecord record) throws Exception {
+        // create a temporary PDF or TXT file (depending on your needs)
+        Path temp = Files.createTempFile("decrypted-", ".pdf");
+
+        // use your existing decrypt method to write decrypted bytes
+        try (OutputStream out = new BufferedOutputStream(new FileOutputStream(temp.toFile()))) {
+            streamDecrypted(record, out);
+        }
+
+        return temp.toFile();
+    }
+
+    public String getFilePath(String storedFilename) {
+        return Path.of(storageDir, storedFilename).toAbsolutePath().toString();
+    }
+
 }

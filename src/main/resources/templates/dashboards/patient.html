@@ -2,90 +2,444 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Patient Dashboard</title>
+    <title>MedVault | Patient Dashboard</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+          font-family: 'Poppins', sans-serif;
+          background: linear-gradient(180deg, #f7fbff 0%, #e8f0ff 100%);
+          color: #333;
+        }
+
+        /* Navbar */
+        .navbar {
+          background: #0077b6;
+          padding: 0.8rem 2rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .navbar-brand {
+          font-weight: 600;
+          font-size: 1.4rem;
+          color: #fff !important;
+        }
+
+        .logout-btn {
+          background-color: #fff;
+          color: #0077b6;
+          font-weight: 600;
+          border-radius: 25px;
+          padding: 6px 20px;
+          border: 2px solid #0077b6;
+          transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+          background-color: #0077b6;
+          color: #fff;
+          border-color: #fff;
+        }
+
+        h2, h4, h5 {
+          color: #003366;
+          font-weight: 600;
+        }
+
+        /* Card Styling */
+        .card {
+          border-radius: 14px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+          border: none;
+          background-color: #fff;
+        }
+
+        /* Table Styling */
+        .table {
+          border-collapse: separate;
+          border-spacing: 0;
+          width: 100%;
+          border-radius: 12px;
+          overflow: hidden;
+        }
+
+        .table th {
+          background-color: #0077b6;
+          color: #fff;
+          text-align: center;
+        }
+
+        .table td {
+          text-align: center;
+          vertical-align: middle;
+          background: #fff;
+          border-bottom: 1px solid #d9e4f5;
+        }
+
+        .table tbody tr:nth-child(even) td {
+          background-color: #f2f7ff;
+        }
+
+        .btn-success {
+          background-color: #00b894;
+          border: none;
+        }
+
+        .btn-success:hover {
+          background-color: #009e7a;
+        }
+
+        .btn-outline-info {
+          border-color: #0077b6;
+          color: #0077b6;
+        }
+
+        .btn-outline-info:hover {
+          background-color: #0077b6;
+          color: white;
+        }
+
+        /* Search bar */
+        .search-bar {
+          width: 100%;
+          max-width: 900px;
+          margin: 0 auto;
+        }
+
+        .search-bar input {
+          border-radius: 25px;
+          border: 1.5px solid #b3d4fc;
+          padding: 12px 20px;
+          font-size: 1rem;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+          transition: all 0.3s;
+        }
+
+        .search-bar input:focus {
+          outline: none;
+          border-color: #0077b6;
+          box-shadow: 0 0 8px rgba(0,119,182,0.3);
+        }
+
+        /* Download all button */
+        .download-all-btn {
+          background: linear-gradient(90deg, #00b4d8, #0077b6);
+          color: white;
+          border: none;
+          border-radius: 25px;
+          padding: 8px 22px;
+          font-size: 0.95rem;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          text-decoration: none;
+          box-shadow: 0 2px 6px rgba(0, 119, 182, 0.3);
+        }
+
+        .download-all-btn:hover {
+          background: linear-gradient(90deg, #0077b6, #0096c7);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 10px rgba(0, 119, 182, 0.4);
+        }
+
+        /* Doctor Notes */
+        .doctor-notes {
+          background: #ffffff;
+          border-left: 5px solid #00b4d8;
+          border-radius: 10px;
+          padding: 20px;
+          margin-top: 25px;
+        }
+
+        .doctor-notes h5 {
+          color: #0077b6;
+          font-weight: 600;
+        }
+
+        .note-item {
+          border-bottom: 1px dashed #b0c4de;
+          padding: 10px 0;
+        }
+
+        .note-item:last-child {
+          border-bottom: none;
+        }
+
+        footer {
+          text-align: center;
+          margin-top: 40px;
+          padding: 10px;
+          font-size: 0.9rem;
+          color: #777;
+        }
+
+        /* === AI SUMMARY OVERLAY === */
+        .overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          display: none;
+          justify-content: center;
+          align-items: center;
+          backdrop-filter: blur(2px);
+          z-index: 9999;
+        }
+
+        .overlay-content {
+          background: #fff;
+          border-radius: 12px;
+          width: 90%;
+          max-width: 600px;
+          padding: 20px 25px;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+          position: relative;
+          animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: scale(0.9); }
+          to { opacity: 1; transform: scale(1); }
+        }
+
+        .overlay-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid #eee;
+          padding-bottom: 8px;
+          margin-bottom: 10px;
+        }
+
+        .overlay-header h5 {
+          color: #0077b6;
+          margin: 0;
+          font-weight: 600;
+        }
+
+        .overlay-close {
+          background: none;
+          border: none;
+          font-size: 1.3rem;
+          color: #0077b6;
+          cursor: pointer;
+        }
+
+        #summaryContent {
+          white-space: pre-wrap;
+          font-size: 0.95rem;
+          color: #333;
+          background-color: #f9fbff;
+          border-radius: 8px;
+          padding: 15px;
+          line-height: 1.6;
+          max-height: 50vh;
+          overflow-y: auto;
+          box-shadow: inset 0 0 4px rgba(0,0,0,0.1);
+        }
+
+        #loadingSpinner {
+          text-align: center;
+          padding: 30px 0;
+        }
+
+        #copyBtn {
+          margin-top: 10px;
+          background: #0077b6;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          padding: 6px 14px;
+          font-weight: 500;
+          transition: 0.2s ease;
+        }
+
+        #copyBtn:hover {
+          background: #005f8f;
+        }
+    </style>
 </head>
-<body class="p-4">
+<body>
 
 <!-- 🔹 Navbar -->
-<nav class="navbar navbar-dark bg-dark mb-4">
-    <div class="container-fluid">
-        <span class="navbar-brand">MedVault</span>
-        <div>
-            <a th:href="@{/logout}" class="btn btn-outline-light btn-sm">Logout</a>
-        </div>
-    </div>
+<nav class="navbar shadow-sm">
+    <span class="navbar-brand">🩺 MedVault - Patient Portal</span>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="logout-btn">Logout</button>
+    </form>
 </nav>
+
+<!-- ✅ Welcome Alert -->
+<div th:if="${param.welcome}" class="alert alert-success text-center" id="welcomeAlert">
+    👋 Welcome back, <strong th:text="${#authentication.name}">User</strong>!
+</div>
 
 <div class="container">
 
-    <h2 class="mb-3">Patient Dashboard</h2>
-    <p>Welcome! Below are your uploaded medical records.</p>
+    <!-- Medical Records Section -->
+    <div class="card p-4 mb-4">
+        <h2 class="text-center mb-3">Your Medical Records</h2>
+        <p class="text-center text-muted">Securely view and manage your health documents.</p>
 
-    <!-- ✅ Optional Success/Error Alerts -->
-    <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
-    <div th:if="${err}" class="alert alert-danger" th:text="${err}"></div>
+        <!-- Search Bar -->
+        <div class="search-bar mb-4">
+            <input type="text" id="searchInput" placeholder="🔍 Search your records by name, type, or doctor..."
+                   class="form-control" onkeyup="filterRecords()">
+        </div>
 
-    <!-- ================= DOWNLOAD ALL BUTTON ================= -->
-    <a th:href="@{/records/{email}/bundle(email=${#authentication.name})}"
-       class="btn btn-secondary btn-sm mb-3">Download All Records</a>
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle">
+                <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th>Type</th>
+                    <th>Content Type</th>
+                    <th>Size</th>
+                    <th>Uploaded At</th>
+                    <th>Uploaded By</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="rec : ${records}">
+                    <td th:text="${rec.originalFilename} ?: 'N/A'"></td>
+                    <td th:text="${rec.type} ?: 'N/A'"></td>
+                    <td th:text="${rec.contentType} ?: 'N/A'"></td>
+                    <td th:text="${rec.readableSize} ?: 'N/A'"></td>
+                    <td th:text="${#temporals.format(rec.uploadedAt, 'yyyy-MM-dd HH:mm:ss')} ?: 'N/A'"></td>
+                    <td th:text="${rec.uploadedBy != null ? rec.uploadedBy.name : 'N/A'}"></td>
+                    <td>
+                        <a th:href="@{/records/{id}/download(id=${rec.id})}" class="btn btn-success btn-sm">Download</a>
+                        <button type="button" class="btn btn-outline-info btn-sm mt-2"
+                                th:onclick="'summarizeRecord(' + ${rec.id} + ')'">🧠 Summarize</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
 
+        <div class="text-center mt-3">
+            <a th:href="@{/records/{email}/bundle(email=${#authentication.name})}" class="download-all-btn">
+                <i class="bi bi-download me-2"></i> Download All Records
+            </a>
+        </div>
+    </div>
 
-    <!-- ================= MEDICAL RECORDS TABLE ================= -->
-    <h4>Your Records</h4>
-    <table class="table table-striped table-bordered mt-3">
-        <thead class="table-dark">
-        <tr>
-            <th>File Name</th>
-            <th>Type</th>
-            <th>Content Type</th>
-            <th>Size</th>
-            <th>Uploaded At</th>
-            <th>Uploaded By</th>
-            <th>Download</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="rec : ${records}">
-            <td th:text="${rec.originalFilename} ?: 'N/A'">File Name</td>
-            <td th:text="${rec.type} ?: 'N/A'">Type</td>
-            <td th:text="${rec.contentType} ?: 'N/A'">Content Type</td>
-            <td th:text="${rec.readableSize} ?: 'N/A'">Size</td>
-            <td th:text="${#temporals.format(rec.uploadedAt, 'yyyy-MM-dd HH:mm:ss')} ?: 'N/A'">Uploaded At</td>
-            <td th:text="${rec.uploadedBy != null ? rec.uploadedBy.name : 'N/A'}">Uploaded By</td>
-            <td>
-                <a th:href="@{/records/{id}/download(id=${rec.id})}" class="btn btn-success btn-sm">
-                    Download
-                </a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <!-- Audit History Section -->
+    <div class="card p-4 mb-4">
+        <h4 class="mb-3">📋 Audit History</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+                <thead class="table-primary text-center">
+                <tr>
+                    <th>Record Name</th>
+                    <th>Action</th>
+                    <th>Actor</th>
+                    <th>Timestamp</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="log : ${logs}">
+                    <td th:text="${log.record != null ? log.record.originalFilename : 'N/A'}"></td>
+                    <td th:text="${log.action != null ? log.action : 'N/A'}"></td>
+                    <td th:text="${log.actor != null ? log.actor.name : 'N/A'}"></td>
+                    <td th:text="${#temporals.format(log.at, 'yyyy-MM-dd HH:mm:ss')} ?: 'N/A'"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <!-- ================= AUDIT HISTORY TABLE ================= -->
-    <h4 class="mt-5">Audit History</h4>
-    <table class="table table-bordered mt-2">
-        <thead class="table-dark">
-        <tr>
-            <th>Record Name</th>
-            <th>Action</th>
-            <th>Actor</th>
-            <th>Timestamp</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="log : ${logs}">
-            <td th:text="${log.record != null ? log.record.originalFilename : 'N/A'}">record.pdf</td>
-            <td th:text="${log.action != null ? log.action : 'N/A'}">UPLOAD</td>
-            <td th:text="${log.actor != null ? log.actor.name : 'N/A'}">Doctor</td>
-            <td th:text="${#temporals.format(log.at, 'yyyy-MM-dd HH:mm:ss')} ?: 'N/A'">2025-10-06</td>
-        </tr>
-        </tbody>
-    </table>
+    <!-- Doctor Notes -->
+    <div class="doctor-notes">
+        <h5>🩺 Doctor Notes</h5>
+        <div th:if="${notes == null or #lists.isEmpty(notes)}" class="text-muted">
+            No doctor notes yet.
+        </div>
+        <div th:each="n : ${notes}" class="note-item">
+            <strong th:text="${n.doctor.name}"></strong>
+            <span class="text-muted">–</span>
+            <span th:text="${n.note}"></span>
+            <div class="small text-secondary">
+                <i th:text="${#temporals.format(n.createdAt, 'yyyy-MM-dd HH:mm')}"></i>
+            </div>
+        </div>
+    </div>
 
-    <a th:href="@{/logout}" class="btn btn-danger mt-4">Logout</a>
-
+    <footer>© 2025 MedVault | Secure Patient Health Record System</footer>
 </div>
 
+<!-- 🧠 AI Summary Overlay -->
+<div id="summaryOverlay" class="overlay">
+    <div class="overlay-content">
+        <div class="overlay-header">
+            <h5>🧠 AI Report Summary</h5>
+            <button class="overlay-close" onclick="closeOverlay()">×</button>
+        </div>
+        <div id="loadingSpinner">
+            <div class="spinner-border text-info" role="status"></div>
+            <p class="mt-2">Analyzing your report, please wait...</p>
+        </div>
+        <div id="summaryContent" style="display:none;"></div>
+        <button id="copyBtn" onclick="copySummary()">📋 Copy Summary</button>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+    function filterRecords(){
+      const q = document.getElementById("searchInput").value.toLowerCase();
+      document.querySelectorAll("table tbody tr").forEach(r=>{
+        r.style.display = r.innerText.toLowerCase().includes(q)? "" : "none";
+      });
+    }
+
+    async function summarizeRecord(recordId) {
+      const overlay = document.getElementById('summaryOverlay');
+      const spinner = document.getElementById('loadingSpinner');
+      const content = document.getElementById('summaryContent');
+
+      overlay.style.display = 'flex';
+      spinner.style.display = 'block';
+      content.style.display = 'none';
+
+      try {
+        const response = await fetch(`/ai/summarize/${recordId}`);
+        const text = await response.text();
+
+        let formatted = text
+            .replace(/\. /g, ".\n• ")
+            .replace(/^/, "• ")
+            .replace(/\n+/g, "\n");
+
+        content.innerHTML = `<div class='text-start'>${formatted}</div>`;
+      } catch (e) {
+        content.innerHTML = `<p class='text-danger'>❌ Error fetching summary.</p>`;
+      } finally {
+        spinner.style.display = 'none';
+        content.style.display = 'block';
+      }
+    }
+
+    function closeOverlay() {
+      document.getElementById('summaryOverlay').style.display = 'none';
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+    const alertBox = document.getElementById("welcomeAlert");
+    if (alertBox) { setTimeout(() => { alertBox.style.transition = "opacity 0.8s ease"; alertBox.style.opacity = "0"; setTimeout(() => { alertBox.style.display = "none"; }, 800); }, 3000); } });
+
+    function copySummary() {
+      const text = document.getElementById('summaryContent').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("✅ Summary copied to clipboard!");
+      });
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

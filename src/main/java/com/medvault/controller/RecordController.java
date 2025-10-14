@@ -6,9 +6,13 @@ import com.medvault.model.User;
 import com.medvault.repository.MedicalRecordRepository;
 import com.medvault.repository.UserRepository;
 import com.medvault.repository.DoctorPatientRepository;
+import com.medvault.service.AIService;
 import com.medvault.service.AuditService;
 import com.medvault.service.RecordStorageService;
+import com.medvault.service.TikaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,10 +22,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
@@ -37,6 +44,16 @@ public class RecordController {
     private final MedicalRecordRepository recordRepo;
     private final DoctorPatientRepository doctorPatientRepo;
     private final AuditService audit;
+    private final MedicalRecordRepository medicalRecordRepository;
+    @Autowired
+    private TikaService tikaService;
+    @Autowired
+    private AIService aiService;
+
+
+    @Value("${app.storage.root:}")
+    private String storageRoot;
+
 
     // ---- UPLOAD ---------
     @PostMapping("/records/upload")
@@ -142,15 +159,16 @@ public class RecordController {
 
     // ---- DOCTOR: Upload form for specific patient ----
     @GetMapping("/records/upload/{patientId}")
-    public String uploadFormForPatient(@PathVariable Long patientId, Model model) {
-        // find patient by ID
+    public String uploadFormForPatient(@PathVariable Long patientId, Model model, Authentication auth) {
         User patient = userRepo.findById(patientId)
                 .orElseThrow(() -> new IllegalArgumentException("Patient not found"));
 
-        // send patient data to the upload page
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
         model.addAttribute("patientEmail", patient.getEmail());
-        model.addAttribute("patientName", patient.getName());
-        return "records/upload";  // reuse the same upload.html form
+        model.addAttribute("showGeneralForm", isAdmin);
+        return "records/upload";
     }
 
 
@@ -189,6 +207,31 @@ public class RecordController {
             }
         }
     }
+    @GetMapping("/records/{recordId}/summarize")
+    @ResponseBody
+    public String summarizeRecord(@PathVariable Long recordId) throws Exception {
+        Optional<MedicalRecord> recordOpt = recordRepo.findById(recordId);
+        if (recordOpt.isEmpty()) return "Record not found.";
+
+        MedicalRecord record = recordOpt.get();
+
+        //  1. Decrypt file to temp
+        File decryptedFile = storage.decryptToTempFile(record);
+
+        try {
+            //  2. Extract text
+            String text = tikaService.extractText(decryptedFile.toPath());
+
+            //  3. Summarize using AI
+            return aiService.summarizeText(text);
+
+        } finally {
+            //  4. Delete temp file for security
+            boolean ignored = decryptedFile.delete();
+        }
+    }
+
+
 
 
 }

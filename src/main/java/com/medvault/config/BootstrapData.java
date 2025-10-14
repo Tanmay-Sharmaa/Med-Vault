@@ -63,6 +63,16 @@ public class BootstrapData implements CommandLineRunner {
             u.getRoles().add(patientRole);
             return userRepository.save(u);
         });
+        User patientUser2 = userRepository.findByEmail("patient2@medvault.com").orElseGet(() -> {
+            User u = User.builder()
+                    .email("patient2@medvault.com")
+                    .name("patient2")
+                    .passwordHash(passwordEncoder.encode("patient111"))
+                    .enabled(true)
+                    .build();
+            u.getRoles().add(patientRole);
+            return userRepository.save(u);
+        });
 
         // ---- Doctor–Patient Assignment ----
         if (!doctorPatientRepository.existsByDoctorAndPatient(doctorUser, patientUser)) {
@@ -70,6 +80,16 @@ public class BootstrapData implements CommandLineRunner {
                     DoctorPatient.builder()
                             .doctor(doctorUser)
                             .patient(patientUser)
+                            .build()
+            );
+        }
+
+            // ---- Doctor–Patient Assignment ----
+        if (!doctorPatientRepository.existsByDoctorAndPatient(doctorUser, patientUser2)) {
+            doctorPatientRepository.save(
+                    DoctorPatient.builder()
+                            .doctor(doctorUser)
+                            .patient(patientUser2)
                             .build()
             );
         }

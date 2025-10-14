@@ -1,49 +1,219 @@
-  <!DOCTYPE html>
-  <html xmlns:th="http://www.thymeleaf.org">
-  <body>
-  <h2>Upload Encrypted Record (Doctor)</h2>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MedVault | Upload Encrypted Record</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <p th:if="${msg}" th:text="${msg}" style="color:green;"></p>
-  <p th:if="${err}" th:text="${err}" style="color:red;"></p>
+  <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 50px;
+    }
+
+    .card {
+        background: #ffffff;
+        border-radius: 18px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        padding: 30px;
+        width: 90%;
+        max-width: 600px;
+        margin-bottom: 30px;
+    }
+
+    h2 {
+        color: #0d47a1;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    label {
+        font-weight: 500;
+        color: #333;
+        display: block;
+        margin-top: 10px;
+    }
+
+    .form-control, select, input[type="file"] {
+        border-radius: 25px;
+        border: 1.5px solid #bcdffb;
+        padding: 10px 15px;
+        font-size: 1rem;
+        width: 100%;
+        margin-top: 5px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, select:focus, input[type="file"]:focus {
+        outline: none;
+        border-color: #0077b6;
+        box-shadow: 0 0 8px rgba(0, 119, 182, 0.2);
+    }
+
+    .btn-upload {
+        background: linear-gradient(90deg, #0077b6, #00b4d8);
+        border: none;
+        border-radius: 25px;
+        padding: 10px 25px;
+        color: #fff;
+        font-weight: 600;
+        margin-top: 15px;
+        transition: 0.3s;
+    }
+
+    .btn-upload:hover {
+        background: linear-gradient(90deg, #005f8f, #0096c7);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 119, 182, 0.25);
+    }
+
+    .msg {
+        font-weight: 600;
+        border-radius: 10px;
+        text-align: center;
+        margin-bottom: 15px;
+        padding: 10px;
+        opacity: 0;
+        transform: translateY(-15px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .msg.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    footer {
+        text-align: center;
+        margin-top: 40px;
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    a.back-link {
+        display: inline-block;
+        margin-top: 15px;
+        font-weight: 600;
+        color: #0077b6;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    a.back-link:hover {
+        color: #005f8f;
+        text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Doctor Upload -->
+<div class="card">
+  <h2>🔒 Upload Encrypted Record (Doctor)</h2>
+
+  <!-- Success/Error Message -->
+  <p th:if="${msg}" th:text="${msg}" class="msg alert-success" id="successMsg"></p>
+  <p th:if="${err}" th:text="${err}" class="msg alert-danger" id="errorMsg"></p>
 
   <form th:action="@{/doctor/upload}" method="post" enctype="multipart/form-data">
-    <label>Patient Email:
-      <input type="email" name="patientEmail" required />
-    </label><br/><br/>
-    <label>Type:
-      <select name="type">
-        <option value="PRESCRIPTION">Prescription</option>
-        <option value="LAB_REPORT">Lab Report</option>
-        <option value="HISTORY">History</option>
-        <option value="OTHER">Other</option>
-      </select>
-    </label><br/><br/>
-    <input type="file" name="file" required />
-    <button type="submit">Upload</button>
+    <!-- For doctor upload -->
+    <label>Patient Email:</label>
+    <input type="email" name="patientEmail"
+           class="form-control"
+           th:value="${patientEmail}"
+           th:readonly="${patientEmail != null}"
+           placeholder="Enter patient email"
+           required>
+
+    <label>Type:</label>
+    <select name="type" class="form-control">
+      <option value="PRESCRIPTION">Prescription</option>
+      <option value="LAB_REPORT">Lab Report</option>
+      <option value="HISTORY">History</option>
+      <option value="OTHER">Other</option>
+    </select>
+
+    <label>Choose File:</label>
+    <input type="file" name="file" class="form-control" required>
+
+    <div class="text-center">
+      <button type="submit" class="btn btn-upload mt-3">Upload</button>
+    </div>
   </form>
+</div>
+<!-- General Upload (Only for Admin) -->
+<div th:if="${showGeneralForm}">
+  <h2>📁 Upload Encrypted Record (General)</h2>
 
-  <hr/>
-
-
-  <!-- general upload form (posts to /records/upload) -->
-  <h2>Upload Encrypted Record (General)</h2>
   <form th:action="@{/records/upload}" method="post" enctype="multipart/form-data">
-    <!-- CSRF token -->
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
-    <label>Patient Email:
-      <input type="email" name="patientEmail" required />
-    </label><br/><br/>
-    <label>Type:
-      <select name="type">
-        <option value="GENERAL">General</option>
-        <option value="PRESCRIPTION">Prescription</option>
-        <option value="REPORT">Report</option>
-      </select>
-    </label><br/><br/>
-    <input type="file" name="file" required />
-    <button type="submit">Upload</button>
+    <!-- Patient Email -->
+    <label>Patient Email:</label>
+    <input type="email" name="patientEmail"
+           class="form-control"
+           th:value="${patientEmail}"
+           th:readonly="${patientEmail != null}"
+           placeholder="Enter patient email"
+           required>
+
+    <!-- Record Type -->
+    <label>Type:</label>
+    <select name="type" class="form-control">
+      <option value="GENERAL">General</option>
+      <option value="PRESCRIPTION">Prescription</option>
+      <option value="REPORT">Report</option>
+    </select>
+
+    <!-- File Upload -->
+    <label>Choose File:</label>
+    <input type="file" name="file" class="form-control" required>
+
+    <div class="text-center">
+      <button type="submit" class="btn btn-upload mt-3">Upload</button>
+    </div>
   </form>
-  <a th:href="@{/doctor/dashboard}">Back</a>
-  </body>
-  </html>
+</div>
+
+<!-- Back to Dashboard button always visible -->
+<div class="text-center mt-3">
+  <a th:href="@{/doctor/dashboard}" class="btn btn-outline-primary rounded-pill px-4">
+    ← Back to Dashboard
+  </a>
+</div>
+
+<footer>© 2025 MedVault | Secure Health Record System</footer>
+<!-- JavaScript for animation fade-in/out of messages -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      const successMsg = document.getElementById("successMsg");
+      const errorMsg = document.getElementById("errorMsg");
+
+      [successMsg, errorMsg].forEach(msg => {
+          if (msg) {
+              // show message with drop animation
+              setTimeout(() => msg.classList.add("show"), 200);
+              // fade out after 5 seconds
+              setTimeout(() => {
+                  msg.style.transition = "opacity 1s ease, transform 0.6s ease";
+                  msg.style.opacity = "0";
+                  msg.style.transform = "translateY(-15px)";
+              }, 5000);
+              // remove element after fade-out
+              setTimeout(() => msg.remove(), 6000);
+          }
+      });
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
