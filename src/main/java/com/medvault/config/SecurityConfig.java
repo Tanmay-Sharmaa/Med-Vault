@@ -41,7 +41,18 @@ public class SecurityConfig {
         http
                 .authenticationProvider(authProvider)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register", "/css/**", "/js/**").permitAll()
+                        .requestMatchers(
+                                "/login",
+                                "/register",
+                                "/signup",          //  allow signup page
+                                "/verify",          //  allow verification link
+                                "/forgot-password", //  future use
+                                "/reset-password",  //  future use
+                                "/test-email",
+                                "/error",
+                                "/css/**",
+                                "/js/**"
+                        ).permitAll()
                         .requestMatchers("/records/**").hasAnyRole("DOCTOR", "PATIENT", "ADMIN") // ✅ secure all record endpoints
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/doctor/**").hasRole("DOCTOR")

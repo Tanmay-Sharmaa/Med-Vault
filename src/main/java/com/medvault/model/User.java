@@ -9,7 +9,7 @@ import java.util.Set;
 @Entity @Table(name="users")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class User {
@@ -29,6 +29,9 @@ public class User {
 
     @Builder.Default
     private boolean enabled = true;
+
+    @Transient
+    private String selectedRole;
 
     private Instant createdAt = Instant.now();
 

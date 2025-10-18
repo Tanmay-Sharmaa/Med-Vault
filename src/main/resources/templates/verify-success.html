@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MedVault | Account Verified</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .verify-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 460px;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        h2 {
+            color: #0d47a1;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .btn-success {
+            background: linear-gradient(90deg, #0077b6, #00b4d8);
+            border: none;
+            border-radius: 30px;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(90deg, #005f8f, #0096c7);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 119, 182, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            position: fixed;
+            bottom: 15px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #444;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="verify-card">
+    <h2>✅ Account Verified!</h2>
+    <p>Your MedVault account is now active. You can log in using your credentials.</p>
+    <a th:href="@{/login}" class="btn btn-success">Go to Login</a>
+</div>
+
+<footer>© 2025 MedVault | Secure Health Record System</footer>
+<script>
+    setTimeout(() => {
+        window.location.href = '/login';
+    }, 5000);
+</script>
+
+</body>
+</html>
