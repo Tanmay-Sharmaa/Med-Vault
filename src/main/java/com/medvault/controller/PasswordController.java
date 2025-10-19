@@ -39,18 +39,20 @@ public class PasswordController {
         return "reset_password"; // Renders reset_password.html
     }
 
-    // process reset password form submission
     @PostMapping("/reset-password")
     public String processResetPassword(@RequestParam String token,
                                        @RequestParam String newPassword,
-                                       Model model){
-        boolean success = passwordService.resetPassword(token,newPassword);
+                                       org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttrs,
+                                       Model model) {
 
-        if(success){
-            model.addAttribute("message", "✅ Password successfully updated! You can now log in.");
-        }else {
-            model.addAttribute("message","⚠ Invalid or expired reset link. Please request again.");
+        boolean success = passwordService.resetPassword(token, newPassword);
+
+        if (success) {
+            redirectAttrs.addFlashAttribute("resetSuccess", "✅ Password reset successfully! You can now log in.");
+            return "redirect:/login";
+        } else {
+            model.addAttribute("error", "⚠️ Invalid or expired reset link. Please request again.");
+            return "reset_password";
         }
-        return "reset_password";
     }
 }
