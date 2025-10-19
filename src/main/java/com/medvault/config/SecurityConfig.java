@@ -46,8 +46,8 @@ public class SecurityConfig {
                                 "/register",
                                 "/signup",          //  allow signup page
                                 "/verify",          //  allow verification link
-                                "/forgot-password", //  future use
-                                "/reset-password",  //  future use
+                                "/forgot-password", //  forgot password page
+                                "/reset-password",  //  to reset password
                                 "/test-email",
                                 "/error",
                                 "/css/**",
