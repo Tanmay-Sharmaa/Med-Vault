@@ -21,7 +21,7 @@ public class PasswordResetToken {
     @Column(nullable = false)
     private String token; // Random unique token string that goes in th reset link
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id", nullable = false)
     private User user; // which user this token belongs to
 
