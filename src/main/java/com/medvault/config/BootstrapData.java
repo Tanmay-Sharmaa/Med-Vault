@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -21,77 +22,89 @@ public class BootstrapData implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void run(String... args) throws Exception {
-        // ---- Roles ----
+    @Transactional
+    public void run(String... args) {
+        System.out.println("✅ Bootstrapping MedVault data...");
+
+        // ---- 1. Ensure Roles Exist ----
         Role adminRole = roleRepository.findByName("ROLE_ADMIN")
                 .orElseGet(() -> roleRepository.save(new Role(null, "ROLE_ADMIN")));
+
         Role doctorRole = roleRepository.findByName("ROLE_DOCTOR")
                 .orElseGet(() -> roleRepository.save(new Role(null, "ROLE_DOCTOR")));
+
         Role patientRole = roleRepository.findByName("ROLE_PATIENT")
                 .orElseGet(() -> roleRepository.save(new Role(null, "ROLE_PATIENT")));
 
-        // ---- Users ----
-        User adminUser = userRepository.findByEmail("admin@medvault.com").orElseGet(() -> {
-            User u = User.builder()
-                    .email("admin@medvault.com")
-                    .name("admin")
-                    .passwordHash(passwordEncoder.encode("admin123"))
-                    .enabled(true)
-                    .build();
-            u.getRoles().add(adminRole);
-            return userRepository.save(u);
-        });
+        // ---- 2. Ensure Users Exist ----
+        User adminUser = createUserIfNotExists(
+                "admin@medvault.com",
+                "Admin",
+                "admin123",
+                adminRole
+        );
 
-        User doctorUser = userRepository.findByEmail("doctor1@medvault.com").orElseGet(() -> {
-            User u = User.builder()
-                    .email("doctor1@medvault.com")
-                    .name("doctor1")
-                    .passwordHash(passwordEncoder.encode("doctor123"))
-                    .enabled(true)
-                    .build();
-            u.getRoles().add(doctorRole);
-            return userRepository.save(u);
-        });
+        User doctorUser = createUserIfNotExists(
+                "doctor1@medvault.com",
+                "Doctor One",
+                "doctor123",
+                doctorRole
+        );
 
-        User patientUser = userRepository.findByEmail("patient1@medvault.com").orElseGet(() -> {
-            User u = User.builder()
-                    .email("patient1@medvault.com")
-                    .name("patient1")
-                    .passwordHash(passwordEncoder.encode("patient123"))
-                    .enabled(true)
-                    .build();
-            u.getRoles().add(patientRole);
-            return userRepository.save(u);
-        });
-        User patientUser2 = userRepository.findByEmail("patient2@medvault.com").orElseGet(() -> {
-            User u = User.builder()
-                    .email("patient2@medvault.com")
-                    .name("patient2")
-                    .passwordHash(passwordEncoder.encode("patient111"))
-                    .enabled(true)
-                    .build();
-            u.getRoles().add(patientRole);
-            return userRepository.save(u);
-        });
+        User patientUser1 = createUserIfNotExists(
+                "patient1@medvault.com",
+                "Patient One",
+                "patient123",
+                patientRole
+        );
 
-        // ---- Doctor–Patient Assignment ----
-        if (!doctorPatientRepository.existsByDoctorAndPatient(doctorUser, patientUser)) {
-            doctorPatientRepository.save(
-                    DoctorPatient.builder()
-                            .doctor(doctorUser)
-                            .patient(patientUser)
-                            .build()
-            );
+        User patientUser2 = createUserIfNotExists(
+                "patient2@medvault.com",
+                "Patient Two",
+                "patient111",
+                patientRole
+        );
+
+        // ---- 3. Ensure Doctor–Patient Links Exist ----
+        createDoctorPatientLink(doctorUser, patientUser1);
+        createDoctorPatientLink(doctorUser, patientUser2);
+
+        System.out.println("✅ Bootstrap completed successfully!");
+    }
+
+    // ------------------- Helper Methods -------------------
+
+    private User createUserIfNotExists(String email, String name, String rawPassword, Role role) {
+        return userRepository.findByEmail(email).orElseGet(() -> {
+            User user = User.builder()
+                    .email(email)
+                    .name(name)
+                    .passwordHash(passwordEncoder.encode(rawPassword))
+                    .enabled(true)
+                    .build();
+
+            // Attach role safely
+            user.getRoles().add(role);
+            User saved = userRepository.save(user);
+            System.out.println("🆕 Created user: " + email + " with role: " + role.getName());
+            return saved;
+        });
+    }
+
+    private void createDoctorPatientLink(User doctor, User patient) {
+        if (doctor == null || patient == null) {
+            System.out.println("⚠️ Skipping invalid doctor-patient mapping (one is null)");
+            return;
         }
 
-            // ---- Doctor–Patient Assignment ----
-        if (!doctorPatientRepository.existsByDoctorAndPatient(doctorUser, patientUser2)) {
+        if (!doctorPatientRepository.existsByDoctorAndPatient(doctor, patient)) {
             doctorPatientRepository.save(
                     DoctorPatient.builder()
-                            .doctor(doctorUser)
-                            .patient(patientUser2)
+                            .doctor(doctor)
+                            .patient(patient)
                             .build()
             );
+            System.out.println("🔗 Linked doctor " + doctor.getEmail() + " ↔ patient " + patient.getEmail());
         }
     }
 }

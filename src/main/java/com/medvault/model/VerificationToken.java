@@ -18,8 +18,7 @@ public class VerificationToken {
 
     private String token;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "user_id", nullable = false)
+    @OneToOne
     private User user;
 
     private LocalDateTime expiryDate;

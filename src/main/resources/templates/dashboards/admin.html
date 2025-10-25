@@ -178,6 +178,12 @@
         <span class="badge bg-primary" th:text="'Total Users: ' + ${users.size()}"></span>
     </div>
 
+    <!-- ✅ Added Assign Doctor to Patient Button -->
+    <a th:href="@{/admin/assign}" class="btn btn-success mb-3">
+        ➕ Assign Doctor to Patient
+    </a>
+    <!-- ✅ End Added Button -->
+
     <div class="table-responsive">
         <table class="table table-hover align-middle">
             <thead>

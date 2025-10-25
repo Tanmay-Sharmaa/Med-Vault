@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Assign Doctor to Patient | MedVault</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 40px;
+        }
+
+        .assign-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 850px;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        h2 {
+            color: #0d47a1;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        label {
+            font-weight: 500;
+            color: #0d47a1;
+        }
+
+        .form-control {
+            border-radius: 30px;
+            padding: 10px 18px;
+            border: 1.5px solid #bcdffb;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #0077b6;
+            box-shadow: 0 0 8px rgba(0, 119, 182, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #0077b6, #00b4d8);
+            border: none;
+            border-radius: 30px;
+            padding: 12px 0;
+            width: 100%;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #005f8f, #0096c7);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 119, 182, 0.3);
+        }
+
+        /* ✅ Updated responsive dashboard button */
+        .btn-dashboard {
+            background: linear-gradient(90deg, #5c6bc0, #3949ab);
+            border: none;
+            border-radius: 30px;
+            padding: 10px 25px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: inline-block;
+            transition: 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .btn-dashboard:hover {
+            background: linear-gradient(90deg, #303f9f, #1a237e);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(25, 118, 210, 0.4);
+        }
+
+        @media (max-width: 576px) {
+            .btn-dashboard {
+                width: 100%;
+                text-align: center;
+                font-size: 0.9rem;
+                padding: 10px 0;
+            }
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 20px;
+            color: white;
+            font-weight: 500;
+            transition: 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            border-radius: 25px;
+            text-align: center;
+            font-weight: 500;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .table th {
+            background-color: #0d47a1 !important;
+            color: #fff !important;
+            text-align: center;
+        }
+
+        .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .btn-danger {
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background-color: #c62828;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            position: fixed;
+            bottom: 15px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #444;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="assign-card">
+
+    <!-- ✅ Back to Dashboard button (improved) -->
+    <a th:href="@{/admin/dashboard}" class="btn-dashboard">
+        ⬅ Back to Dashboard
+    </a>
+
+    <h2>🩺 Assign Doctor to Patient</h2>
+
+    <!-- Success Alert -->
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+    <form th:action="@{/admin/assign}" method="post" class="mt-4">
+
+        <div class="mb-3">
+            <label>Choose Doctor:</label>
+            <select name="doctorEmail" class="form-control" required>
+                <option value="">Select Doctor</option>
+                <option th:each="doc : ${doctors}" th:value="${doc.email}"
+                        th:text="${doc.name + ' (' + doc.email + ')'}"></option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label>Choose Patient:</label>
+            <select name="patientEmail" class="form-control" required>
+                <option value="">Select Patient</option>
+                <option th:each="pat : ${patients}" th:value="${pat.email}"
+                        th:text="${pat.name + ' (' + pat.email + ')'}"></option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Assign</button>
+    </form>
+
+    <!-- ✅ View Assignments Section with Unassign Action -->
+    <hr class="mt-5 mb-3">
+    <h4 class="text-center text-primary fw-bold">📋 Current Doctor–Patient Assignments</h4>
+
+    <div class="table-responsive mt-3">
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+            <tr>
+                <th>Doctor Name</th>
+                <th>Doctor Email</th>
+                <th>Patient Name</th>
+                <th>Patient Email</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="entry : ${assignments}">
+                <td th:text="${entry.doctor.name}"></td>
+                <td th:text="${entry.doctor.email}"></td>
+                <td th:text="${entry.patient.name}"></td>
+                <td th:text="${entry.patient.email}"></td>
+                <td>
+                    <form th:action="@{'/admin/unassign/' + ${entry.id}}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to unassign this pair?')">
+                            🗑 Unassign
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<footer>© 2025 MedVault | Secure Health Record System</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

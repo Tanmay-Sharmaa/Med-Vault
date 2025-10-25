@@ -34,8 +34,6 @@ tmp/
 *.local.properties
 application-local.properties
 application-secret.properties
-application.properties.bak   # <--- add this
-*.backup     
 
 # --- Keys / certs (if any) ---
 *.keystore
