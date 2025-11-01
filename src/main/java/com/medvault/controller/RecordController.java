@@ -222,6 +222,8 @@ public class RecordController {
             //  2. Extract text
             String text = tikaService.extractText(decryptedFile.toPath());
 
+            System.out.println("Extracted Text:\n" + text);
+
             //  3. Summarize using AI
             return aiService.summarizeText(text);
 
