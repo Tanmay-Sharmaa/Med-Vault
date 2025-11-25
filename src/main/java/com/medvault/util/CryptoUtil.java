@@ -32,7 +32,7 @@ public class CryptoUtil {
         byte[] iv = new byte[IV_LEN];
         new SecureRandom().nextBytes(iv);
 
-        // 1) write IV in plaintext at start
+        // write IV in plaintext at start
         out.write(iv);
 
         Cipher cipher = Cipher.getInstance(TRANSFORM);

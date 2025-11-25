@@ -17,15 +17,14 @@ public class AIService {
     private String apiKey;
 
     //  These two are hosted & free to use
-    private static final String PRIMARY_MODEL_URL = "https://api-inference.huggingface.co/models/philschmid/bart-large-cnn-samsum";
+    private static final String PRIMARY_MODEL_URL = "https://router.huggingface.co/hf-inference/models/philschmid/bart-large-cnn-samsum";
     //private static final String PRIMARY_MODEL_URL = "https://api-inference.huggingface.co/models/google/flan-t5-large";
-    private static final String FALLBACK_MODEL_URL = "https://api-inference.huggingface.co/models/sshleifer/distilbart-cnn-12-6";
+    private static final String FALLBACK_MODEL_URL = "https://router.huggingface.co/hf-inference/models/sshleifer/distilbart-cnn-12-6";
 
 
 
-    /**
-     *  Summarize a medical record into simple and patient-friendly language
-     */
+    //Summarize a medical record into simple and patient-friendly language
+
     public String summarizeText(String text) {
         try {
             if (text == null || text.isBlank()) {
@@ -40,18 +39,12 @@ public class AIService {
             headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
              // Step 2: Use a guiding instruction (prompt) to improve summary quality
-            String prompt = """
-                    You are a helpful medical analysis assistant.
-                    Read the following lab report text carefully and:
-                    1. Write a short and clear summary of the patient’s test results.
-                    2. For each major parameter (like Hemoglobin, WBC, Glucose, Cholesterol, etc.), mention if it is Normal, High, or Low compared to common healthy ranges.
-                    3. At the end, provide a one-line overall interpretation or advice for the patient in simple English.
-                    Do NOT repeat these instructions or say "You are a medical assistant AI".
-                    
-                    Report text:
-                    """ + text;
-
-
+            String prompt =
+                    "summarize: Provide a simple, patient-friendly summary of this medical report. " +
+                            "Identify key parameters (Hemoglobin, WBC, RBC, Platelets, Glucose, Cholesterol) " +
+                            "and state if each is Normal, High, or Low based on typical ranges. " +
+                            "End with one-line overall advice.\n\n" +
+                            text;
 
             Map<String, Object> payload = Collections.singletonMap("inputs", prompt);
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);

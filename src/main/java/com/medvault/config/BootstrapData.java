@@ -67,7 +67,7 @@ public class BootstrapData implements CommandLineRunner {
             user.setName(name);
             user.setPasswordHash(passwordEncoder.encode(password));
             user.setEnabled(true);
-            user.setRoles(Collections.singleton(role)); // ✅ ensures roles is never null
+            user.setRoles(Collections.singleton(role)); // ensures roles is never null
             User saved = userRepository.save(user);
             System.out.println("🆕 Created user: " + email + " with role: " + role.getName());
             return saved;

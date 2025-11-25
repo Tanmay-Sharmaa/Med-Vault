@@ -69,7 +69,7 @@ public class RecordController {
             }
             if (!StringUtils.hasText(patientEmail)) {
                 model.addAttribute("err", "please enter the email.");
-                return "records/upload"; // ✅ fixed typo
+                return "records/upload"; // fixed typo
             }
 
             User uploader = userRepo.findByEmail(auth.getName()).orElseThrow();

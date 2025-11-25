@@ -26,16 +26,16 @@ public class AIController {
         return recordRepo.findById(recordId)
                 .map(record -> {
                     try {
-                        // ✅ Step 1: Decrypt encrypted .bin into a temporary readable file
+                        //  Step 1: Decrypt encrypted .bin into a temporary readable file
                         File decryptedFile = storageService.decryptToTempFile(record);
 
-                        // ✅ Step 2: Extract text using Tika
+                        //  Step 2: Extract text using Tika
                         String extractedText = tikaService.extractText(decryptedFile.toPath());
 
-                        // ✅ Step 3: Summarize the extracted text
+                        //  Step 3: Summarize the extracted text
                         String summary = aiService.summarizeText(extractedText);
 
-                        // ✅ Step 4: Clean up temporary file
+                        //  Step 4: Clean up temporary file
                         decryptedFile.delete();
 
                         return ResponseEntity.ok(summary);
